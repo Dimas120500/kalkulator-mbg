@@ -1,46 +1,38 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Kalkulator MBG</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/index.css" />
 </head>
 <body>
 
-<div class="app">
-  <h1>🍱 Kalkulator MBG by dimszz</h1>
+  <div class="app">
 
-  <input type="text" id="nama" placeholder="Nama Sekolah">
-  <input type="number" id="besar" placeholder="Porsi Besar">
-  <input type="number" id="kecil" placeholder="Porsi Kecil">
+    <h1 class="title">Kalkulator MBG</h1>
 
-  <button onclick="tambahData()">Tambah Data</button>
+    <div class="card">
+      <input type="text" id="nama" placeholder="Nama Sekolah" />
+      <input type="number" id="besar" placeholder="Porsi Besar" />
+      <input type="number" id="kecil" placeholder="Porsi Kecil" />
+      <button onclick="tambahData()">Tambah Data</button>
+    </div>
 
-  <table id="tabel">
-    <thead>
-      <tr>
-        <th>Nama</th>
-        <th>Besar</th>
-        <th>Kecil</th>
-        <th>Ikat B</th>
-        <th>Omp B</th>
-        <th>Ikat K</th>
-        <th>Omp K</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <div id="data-list"></div>
 
-  <div class="total">
-    Total Besar: <span id="totalBesar">0</span><br>
-    Total Kecil: <span id="totalKecil">0</span>
+    <div class="card total">
+      <p><strong>Total Porsi Besar:</strong> <span id="totalBesar">0</span></p>
+      <p><strong>Total Porsi Kecil:</strong> <span id="totalKecil">0</span></p>
+      <button class="export" onclick="exportHTML()">Export HTML</button>
+    </div>
+
+    <footer>
+      Developed by <b>dimszz</b>
+    </footer>
+
   </div>
 
-  <button class="export" onclick="exportHTML()">Export HTML</button>
-</div>
-
-<script src="js/index.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>
