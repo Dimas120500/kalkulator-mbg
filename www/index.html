@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator MBG</title>
+
+<style>
+body {
+  margin: 0;
+  background: #f5f6fa;
+  font-family: system-ui, Arial, sans-serif;
+}
+.header {
+  background: #2f80ed;
+  color: white;
+  padding: 16px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+.card {
+  background: white;
+  margin: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  background: #2f80ed;
+  color: white;
+}
+button.delete {
+  background: #e74c3c;
+  padding: 6px;
+  font-size: 12px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+}
+.total {
+  font-weight: bold;
+  margin-top: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Kalkulator MBG</div>
+
+<div class="card">
+  <input id="nama" placeholder="Nama Sekolah">
+  <input id="besar" type="number" placeholder="Porsi Besar">
+  <input id="kecil" type="number" placeholder="Porsi Kecil">
+  <button onclick="tambah()">Tambah Data</button>
+</div>
+
+<div class="card">
+  <table id="tabel">
+    <tr>
+      <th>Nama</th>
+      <th>B</th><th>I</th><th>O</th>
+      <th>K</th><th>I</th><th>O</th>
+      <th>❌</th>
+    </tr>
+  </table>
+
+  <div class="total" id="total">
+    Total Besar: 0 | Total Kecil: 0
+  </div>
+</div>
+
+<script>
+const ISI_PER_IKAT = 5;
+let data = [];
+let totalBesar = 0;
+let totalKecil = 0;
+
+function render() {
+  let html =
+    '<tr>' +
+    '<th>Nama</th>' +
+    '<th>B</th><th>I</th><th>O</th>' +
+    '<th>K</th><th>I</th><th>O</th>' +
+    '<th>❌</th>' +
+    '</tr>';
+
+  totalBesar = 0;
+  totalKecil = 0;
+
+  data.forEach(function(d, i) {
+    totalBesar += d.besar;
+    totalKecil += d.kecil;
+
+    html +=
+      '<tr>' +
+      '<td>' + d.nama + '</td>' +
+      '<td>' + d.besar + '</td><td>' + d.ib + '</td><td>' + d.ob + '</td>' +
+      '<td>' + d.kecil + '</td><td>' + d.ik + '</td><td>' + d.ok + '</td>' +
+      '<td><button class="delete" onclick="hapus(' + i + ')">Hapus</button></td>' +
+      '</tr>';
+  });
+
+  document.getElementById("tabel").innerHTML = html;
+  document.getElementById("total").innerHTML =
+    'Total Besar: ' + totalBesar + ' | Total Kecil: ' + totalKecil;
+}
+
+function tambah() {
+  let nama = document.getElementById("nama").value.trim();
+  let besar = parseInt(document.getElementById("besar").value) || 0;
+  let kecil = parseInt(document.getElementById("kecil").value) || 0;
+
+  if (!nama) {
+    alert("Nama sekolah wajib diisi!");
+    return;
+  }
+
+  data.push({
+    nama: nama,
+    besar: besar,
+    kecil: kecil,
+    ib: Math.floor(besar / ISI_PER_IKAT),
+    ob: besar % ISI_PER_IKAT,
+    ik: Math.floor(kecil / ISI_PER_IKAT),
+    ok: kecil % ISI_PER_IKAT
+  });
+
+  render();
+
+  document.getElementById("nama").value = "";
+  document.getElementById("besar").value = "";
+  document.getElementById("kecil").value = "";
+}
+
+function hapus(i) {
+  if (!confirm("Hapus data ini?")) return;
+  data.splice(i, 1);
+  render();
+}
+</script>
+
+</body>
+</html>
