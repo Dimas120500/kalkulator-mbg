@@ -1,76 +1,92 @@
-const ISI_PER_IKAT = 5;
+function exportHTML() {
+  let cards = "";
+  const now = new Date();
+  const waktu = now.toLocaleString("id-ID");
 
-let data = [];
-let totalBesar = 0;
-let totalKecil = 0;
+  let totalSemua = totalBesar + totalKecil;
 
-function tambahData() {
-  const nama = document.getElementById("nama").value.trim();
-  const besar = parseInt(document.getElementById("besar").value);
-  const kecil = parseInt(document.getElementById("kecil").value);
-
-  if (!nama || isNaN(besar) || isNaN(kecil)) {
-    alert("Lengkapi semua input!");
-    return;
-  }
-
-  const ib = Math.floor(besar / ISI_PER_IKAT);
-  const ob = besar % ISI_PER_IKAT;
-  const ik = Math.floor(kecil / ISI_PER_IKAT);
-  const ok = kecil % ISI_PER_IKAT;
-
-  data.push({ nama, besar, kecil, ib, ob, ik, ok });
-
-  totalBesar += besar;
-  totalKecil += kecil;
-
-  render();
-  document.getElementById("nama").value = "";
-  document.getElementById("besar").value = "";
-  document.getElementById("kecil").value = "";
-}
-
-function hapusData(index) {
-  totalBesar -= data[index].besar;
-  totalKecil -= data[index].kecil;
-  data.splice(index, 1);
-  render();
-}
-
-function render() {
-  const list = document.getElementById("data-list");
-  list.innerHTML = "";
-
-  data.forEach((d, i) => {
-    list.innerHTML += `
-      <div class="card data-item">
-        <div class="data-header">
-          <strong>${d.nama}</strong>
-          <button class="delete" onclick="hapusData(${i})">❌</button>
-        </div>
+  data.forEach(d => {
+    cards += `
+      <div class="card">
+        <h3>${d.nama}</h3>
 
         <p><b>Porsi Besar:</b> ${d.besar}</p>
-        <p>• Ikat: ${d.ib}</p>
-        <p>• Ompreng: ${d.ob}</p>
+        <p>Ikat: ${d.ib} | Ompreng: ${d.ob}</p>
 
         <p><b>Porsi Kecil:</b> ${d.kecil}</p>
-        <p>• Ikat: ${d.ik}</p>
-        <p>• Ompreng: ${d.ok}</p>
+        <p>Ikat: ${d.ik} | Ompreng: ${d.ok}</p>
       </div>
     `;
   });
 
-  document.getElementById("totalBesar").innerText = totalBesar;
-  document.getElementById("totalKecil").innerText = totalKecil;
-}
-
-function exportHTML() {
   const html = `
-  <h2>Laporan MBG</h2>
-  ${document.getElementById("data-list").innerHTML}
-  <p><b>Total Porsi Besar:</b> ${totalBesar}</p>
-  <p><b>Total Porsi Kecil:</b> ${totalKecil}</p>
-  `;
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan MBG</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+  }
+  .time {
+    text-align: center;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+  }
+  .total {
+    margin-top: 20px;
+    background: #eaf4ff;
+    padding: 16px;
+    border-radius: 10px;
+  }
+  footer {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>LAPORAN OMPRENG MBG</h1>
+<div class="time">${waktu}</div>
+
+<div class="grid">
+  ${cards}
+</div>
+
+<div class="total">
+  <h3>TOTAL KESELURUHAN</h3>
+  <p>Porsi Besar: ${totalBesar}</p>
+  <p>Porsi Kecil: ${totalKecil}</p>
+  <p><b>Total Semua: ${totalSemua}</b></p>
+</div>
+
+<footer>
+  Developed by dimsz
+</footer>
+
+</body>
+</html>
+`;
 
   const blob = new Blob([html], { type: "text/html" });
   const a = document.createElement("a");
