@@ -41,10 +41,22 @@ button {
   background: #2563eb;
   color: #fff;
   font-size: 16px;
+  cursor: pointer;
 }
 
-.result p {
-  margin: 4px 0;
+button.hapus {
+  background: #ef4444;
+  margin-top: 8px;
+}
+
+.data-item {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.total {
+  background: #eff6ff;
 }
 
 .footer {
@@ -60,15 +72,27 @@ button {
 
 <h1>Kalkulator MBG</h1>
 
+<!-- INPUT -->
 <div class="card">
   <input id="nama" placeholder="Nama Sekolah">
   <input id="besar" type="number" placeholder="Porsi Besar">
   <input id="kecil" type="number" placeholder="Porsi Kecil">
-  <button onclick="hitung()">Tambah Data</button>
+  <button onclick="tambahData()">Tambah Data</button>
 </div>
 
-<div class="card result" id="hasil"></div>
+<!-- DAFTAR DATA -->
+<div class="card">
+  <h3>Data Sekolah</h3>
+  <div id="listData"></div>
+</div>
 
+<!-- TOTAL -->
+<div class="card total">
+  <h3>Total Keseluruhan</h3>
+  <div id="total"></div>
+</div>
+
+<!-- EXPORT -->
 <div class="card">
   <button onclick="exportHTML()">Export HTML</button>
 </div>
@@ -78,49 +102,97 @@ button {
 </div>
 
 <script>
-function hitung() {
-  const nama = document.getElementById("nama").value;
+const ISI_PER_IKAT = 5;
+let dataMBG = JSON.parse(localStorage.getItem("dataMBG")) || [];
+
+function simpan() {
+  localStorage.setItem("dataMBG", JSON.stringify(dataMBG));
+}
+
+function tambahData() {
+  const nama = document.getElementById("nama").value.trim();
   const besar = Number(document.getElementById("besar").value);
   const kecil = Number(document.getElementById("kecil").value);
 
-  const ikatB = Math.floor(besar / 5);
-  const omprengB = besar % 5;
+  if (!nama) return alert("Nama sekolah wajib diisi");
 
-  const ikatK = Math.floor(kecil / 5);
-  const omprengK = kecil % 5;
+  dataMBG.push({ nama, besar, kecil });
+  simpan();
+  render();
 
-  document.getElementById("hasil").innerHTML = `
-    <h3>${nama}</h3>
+  document.getElementById("nama").value = "";
+  document.getElementById("besar").value = "";
+  document.getElementById("kecil").value = "";
+}
 
-    <p><b>Porsi Besar:</b> ${besar}</p>
-    <p>• Ikat: ${ikatB}</p>
-    <p>• Ompreng: ${omprengB}</p>
+function hapusData(index) {
+  dataMBG.splice(index, 1);
+  simpan();
+  render();
+}
 
-    <br>
+function render() {
+  const list = document.getElementById("listData");
+  const totalDiv = document.getElementById("total");
 
-    <p><b>Porsi Kecil:</b> ${kecil}</p>
-    <p>• Ikat: ${ikatK}</p>
-    <p>• Ompreng: ${omprengK}</p>
+  list.innerHTML = "";
+  let totalB = 0, totalK = 0;
+
+  dataMBG.forEach((d, i) => {
+    const ib = Math.floor(d.besar / ISI_PER_IKAT);
+    const ob = d.besar % ISI_PER_IKAT;
+    const ik = Math.floor(d.kecil / ISI_PER_IKAT);
+    const ok = d.kecil % ISI_PER_IKAT;
+
+    totalB += d.besar;
+    totalK += d.kecil;
+
+    list.innerHTML += `
+      <div class="data-item">
+        <b>${d.nama}</b><br>
+        Porsi Besar: ${d.besar}<br>
+        Ikat: ${ib}, Ompreng: ${ob}<br><br>
+        Porsi Kecil: ${d.kecil}<br>
+        Ikat: ${ik}, Ompreng: ${ok}
+        <button class="hapus" onclick="hapusData(${i})">Hapus</button>
+      </div>
+    `;
+  });
+
+  totalDiv.innerHTML = `
+    <b>Total Porsi Besar:</b> ${totalB}<br>
+    <b>Total Porsi Kecil:</b> ${totalK}<br><br>
+    <b>Total Ikat Besar:</b> ${Math.floor(totalB / ISI_PER_IKAT)}<br>
+    <b>Total Ompreng Besar:</b> ${totalB % ISI_PER_IKAT}<br><br>
+    <b>Total Ikat Kecil:</b> ${Math.floor(totalK / ISI_PER_IKAT)}<br>
+    <b>Total Ompreng Kecil:</b> ${totalK % ISI_PER_IKAT}
   `;
 }
 
 function exportHTML() {
+  let isi = document.getElementById("listData").innerHTML;
+  let total = document.getElementById("total").innerHTML;
+
   const html = `
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Laporan MBG</title>
-</head>
+<head><meta charset="UTF-8"><title>Laporan MBG</title></head>
 <body>
-${document.getElementById("hasil").innerHTML}
+<h2>Laporan MBG</h2>
+${isi}
+<hr>
+${total}
 </body>
-</html>
-`;
-  const win = window.open("", "_blank");
-  win.document.write(html);
-  win.document.close();
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "laporan_mbg.html";
+  a.click();
 }
+
+render();
 </script>
 
 </body>
